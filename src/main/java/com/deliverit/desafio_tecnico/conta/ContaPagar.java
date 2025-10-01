@@ -57,7 +57,23 @@ public class ContaPagar {
 
 
     public void calcularValores() {
+        this.diasAtraso = calcularDiasAtraso();
 
+        if (this.diasAtraso > 0) {
+            this.regraAplicada = RegraPagamento.regraPorDiasAtraso(this.diasAtraso);
+
+            if (this.regraAplicada != null) {
+                this.valorCorrigido = this.regraAplicada.calcularValorCorrigido(this.valorOriginal, this.diasAtraso);
+                this.descricaoRegra = this.regraAplicada.getDescricao();
+            } else {
+                this.valorCorrigido = this.valorOriginal;
+                this.descricaoRegra = null;
+            }
+        } else {
+            this.valorCorrigido = this.valorOriginal;
+            this.regraAplicada = null;
+            this.descricaoRegra = null;
+        }
     }
 
     public Integer calcularDiasAtraso() {
