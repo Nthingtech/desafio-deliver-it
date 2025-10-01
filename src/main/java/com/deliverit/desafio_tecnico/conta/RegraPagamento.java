@@ -9,6 +9,11 @@ public enum RegraPagamento {
     SUPERIOR_3_DIAS(4, 5, new BigDecimal("3.0"), new BigDecimal("0.2")),
     SUPERIOR_5_DIAS(6, Integer.MAX_VALUE, new BigDecimal("5.0"), new BigDecimal("0.3"));
 
+
+    private static final int MONETARY_SCALE = 2;
+    private static final int INTERMEDIATE_CALCULATION_SCALE = 4;
+    private static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
+
     private final int diasMinimo;
     private final int diasMaximo;
     private final BigDecimal percentualMulta;
@@ -42,19 +47,19 @@ public enum RegraPagamento {
 
         BigDecimal multa = valorOriginal
                 .multiply(percentualMulta)
-                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                .divide(ONE_HUNDRED, MONETARY_SCALE, RoundingMode.HALF_UP);
 
 
         BigDecimal juros = valorOriginal
                 .multiply(percentualJurosDia)
-                .divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP)
+                .divide(ONE_HUNDRED, INTERMEDIATE_CALCULATION_SCALE, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(diasAtraso));
 
 
         return valorOriginal
                 .add(multa)
                 .add(juros)
-                .setScale(2, RoundingMode.HALF_UP);
+                .setScale(MONETARY_SCALE, RoundingMode.HALF_UP);
     }
 
     public String getDescricao() {
