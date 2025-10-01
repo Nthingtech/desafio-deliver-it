@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Entity
@@ -33,6 +34,10 @@ public class ContaPagar {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal valorOriginal;
 
+    @NotNull(message = "Data de vencimento é obrigatória.")
+    @Column(nullable = false)
+    private LocalDate dataVencimento;
+
     @NotNull(message = "Data de pagamento é obrigatória.")
     @Column(nullable = false)
     private LocalDate dataPagamento;
@@ -51,7 +56,34 @@ public class ContaPagar {
     private String descricaoRegra;
 
 
+    public void calcularValores() {
+        this.diasAtraso = calcularDiasAtraso();
 
+        if (this.diasAtraso > 0) {
+            this.regraAplicada = RegraPagamento.regraPorDiasAtraso(this.diasAtraso);
+
+            if (this.regraAplicada != null) {
+                this.valorCorrigido = this.regraAplicada.calcularValorCorrigido(this.valorOriginal, this.diasAtraso);
+                this.descricaoRegra = this.regraAplicada.getDescricao();
+            } else {
+                this.valorCorrigido = this.valorOriginal;
+                this.descricaoRegra = null;
+            }
+        } else {
+            this.valorCorrigido = this.valorOriginal;
+            this.regraAplicada = null;
+            this.descricaoRegra = null;
+        }
+    }
+
+    public Integer calcularDiasAtraso() {
+        if (this.dataVencimento == null || this.dataPagamento == null) {
+            return 0;
+        }
+
+        long dias = ChronoUnit.DAYS.between(this.dataVencimento, this.dataPagamento);
+        return dias > 0 ? (int) dias : 0;
+    }
 
     public Long getId() {
         return id;
@@ -75,6 +107,14 @@ public class ContaPagar {
 
     public void setValorOriginal(BigDecimal valorOriginal) {
         this.valorOriginal = valorOriginal;
+    }
+
+    public LocalDate getDataVencimento() {
+        return dataVencimento;
+    }
+
+    public void setDataVencimento(LocalDate dataVencimento) {
+        this.dataVencimento = dataVencimento;
     }
 
     public LocalDate getDataPagamento() {
