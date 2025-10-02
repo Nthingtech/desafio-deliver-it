@@ -5,6 +5,9 @@ import com.deliverit.desafio_tecnico.conta.dtos.ContaPagarResponseDTO;
 import com.deliverit.desafio_tecnico.conta.mappers.ContaPagarMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ContaPagarServiceImpl implements ContaPagarService {
 
@@ -24,7 +27,9 @@ public class ContaPagarServiceImpl implements ContaPagarService {
     }
 
     @Override
-    public ContaPagarResponseDTO listar() {
-        return null;
+    public List<ContaPagarResponseDTO> listar() {
+        return contaPagarRepository.findAll().stream()
+                .map(contaPagarMapper:: toDto)
+                .collect(Collectors.toList());
     }
 }
