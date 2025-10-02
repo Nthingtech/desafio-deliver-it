@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 
 public enum RegraPagamento {
 
-    ATE_3_DIAS(0, 3, new BigDecimal("2.0"), new BigDecimal("0.1")),
+    ATE_3_DIAS(1, 3, new BigDecimal("2.0"), new BigDecimal("0.1")),
     SUPERIOR_3_DIAS(4, 5, new BigDecimal("3.0"), new BigDecimal("0.2")),
     SUPERIOR_5_DIAS(6, Integer.MAX_VALUE, new BigDecimal("5.0"), new BigDecimal("0.3"));
 
