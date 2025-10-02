@@ -2,6 +2,7 @@ package com.deliverit.desafio_tecnico.conta;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.stream.Stream;
 
 public enum RegraPagamento {
 
@@ -27,16 +28,14 @@ public enum RegraPagamento {
     }
 
     public static RegraPagamento regraPorDiasAtraso(int diasAtraso) {
-        if (diasAtraso < 0) {
+        if (diasAtraso <= 0) {
             return null;
         }
 
-        for (RegraPagamento regra : values()) {
-            if (diasAtraso >= regra.diasMinimo && diasAtraso <= regra.diasMaximo) {
-                return regra;
-            }
-        }
-        return null;
+        return Stream.of(values())
+                .filter(regra -> diasAtraso >= regra.diasMinimo && diasAtraso <= regra.diasMaximo)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Nenhuma regra de cáculo para " + diasAtraso + " dias de atraso"));
     }
 
     public BigDecimal calcularValorCorrigido(BigDecimal valorOriginal, int diasAtraso) {
