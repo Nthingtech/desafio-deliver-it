@@ -1,4 +1,4 @@
-package com.deliverit.desafio_tecnico.conta;
+package com.deliverit.desafio_tecnico.conta.enums;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

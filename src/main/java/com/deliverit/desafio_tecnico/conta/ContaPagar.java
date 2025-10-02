@@ -1,5 +1,6 @@
 package com.deliverit.desafio_tecnico.conta;
 
+import com.deliverit.desafio_tecnico.conta.enums.RegraPagamento;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
