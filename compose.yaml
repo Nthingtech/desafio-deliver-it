@@ -10,6 +10,8 @@ services:
       - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - desafio-network
 
   app:
     build:
@@ -18,7 +20,7 @@ services:
     depends_on:
       - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/db_deliver_it
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_deliver_it
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: secret
     ports:
