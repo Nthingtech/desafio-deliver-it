@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -56,27 +58,24 @@ public class ContaPagar {
     private String descricaoRegra;
 
 
+    @PrePersist
+    @PreUpdate
     public void calcularValores() {
-        this.diasAtraso = calcularDiasAtraso();
+        this.diasAtraso = this.calcularDiasAtraso();
+        this.regraAplicada = RegraPagamento.regraPorDiasAtraso(this.diasAtraso);
 
-        if (this.diasAtraso > 0) {
-            this.regraAplicada = RegraPagamento.regraPorDiasAtraso(this.diasAtraso);
-
-            if (this.regraAplicada != null) {
-                this.valorCorrigido = this.regraAplicada.calcularValorCorrigido(this.valorOriginal, this.diasAtraso);
-                this.descricaoRegra = this.regraAplicada.getDescricao();
-            } else {
-                this.valorCorrigido = this.valorOriginal;
-                this.descricaoRegra = null;
-            }
+        if (this.regraAplicada != null) {
+            this.valorCorrigido = this.regraAplicada.calcularValorCorrigido(this.valorOriginal, this.diasAtraso);
+            this.descricaoRegra = this.regraAplicada.getDescricao();
         } else {
+
             this.valorCorrigido = this.valorOriginal;
-            this.regraAplicada = null;
             this.descricaoRegra = null;
         }
+
     }
 
-    public Integer calcularDiasAtraso() {
+    private Integer calcularDiasAtraso() {
         if (this.dataVencimento == null || this.dataPagamento == null) {
             return 0;
         }

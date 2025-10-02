@@ -2,10 +2,11 @@ package com.deliverit.desafio_tecnico.conta;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.stream.Stream;
 
 public enum RegraPagamento {
 
-    ATE_3_DIAS(0, 3, new BigDecimal("2.0"), new BigDecimal("0.1")),
+    ATE_3_DIAS(1, 3, new BigDecimal("2.0"), new BigDecimal("0.1")),
     SUPERIOR_3_DIAS(4, 5, new BigDecimal("3.0"), new BigDecimal("0.2")),
     SUPERIOR_5_DIAS(6, Integer.MAX_VALUE, new BigDecimal("5.0"), new BigDecimal("0.3"));
 
@@ -27,16 +28,14 @@ public enum RegraPagamento {
     }
 
     public static RegraPagamento regraPorDiasAtraso(int diasAtraso) {
-        if (diasAtraso < 0) {
+        if (diasAtraso <= 0) {
             return null;
         }
 
-        for (RegraPagamento regra : values()) {
-            if (diasAtraso >= regra.diasMinimo && diasAtraso <= regra.diasMaximo) {
-                return regra;
-            }
-        }
-        return null;
+        return Stream.of(values())
+                .filter(regra -> diasAtraso >= regra.diasMinimo && diasAtraso <= regra.diasMaximo)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Nenhuma regra de cáculo para " + diasAtraso + " dias de atraso"));
     }
 
     public BigDecimal calcularValorCorrigido(BigDecimal valorOriginal, int diasAtraso) {
